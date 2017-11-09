@@ -1,0 +1,15 @@
+# Use Docker to build
+
+```
+docker build -t dnsmasq .
+```
+
+# Test the build
+dnsmasq runs in the foreground and in debug mode, loading entries from `entries.conf.docker`
+
+```
+docker run --name dnsmasq -Pit dnsmasq
+DNS_PORT=$(docker port dnsmasq 5353/udp | cut -d : -f 2)
+dig -p $DNS_PORT test-single @localhost
+dig -p $DNS_PORT test-multiple @localhost
+```
