@@ -13,3 +13,9 @@ DNS_PORT=$(docker port dnsmasq 5353/udp | cut -d : -f 2)
 dig -p $DNS_PORT test-single @localhost
 dig -p $DNS_PORT test-multiple @localhost
 ```
+
+If you want to get the contents of the cache, simply run:
+
+```
+docker kill --signal=USR1 dnsmasq
+```
