@@ -111,6 +111,9 @@ void cache_init(void)
   
   /* create initial hash table*/
   rehash(daemon->cachesize);
+
+  /* Initialize a RNG used later on */
+  srand(time(0));
 }
 
 /* In most cases, we create the hash table once here by calling this with (hash_table == NULL)
