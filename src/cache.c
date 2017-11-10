@@ -175,7 +175,6 @@ static void cache_hash(struct crec *crecp)
      immortal entries are at the end of the hash-chain.
      This allows reverse searches and garbage collection to be optimised */
 
-  int coin_flip = 0;
   struct crec **up = hash_bucket(cache_get_name(crecp)), **tmp = NULL;
 
   if (!(crecp->flags & F_REVERSE))
