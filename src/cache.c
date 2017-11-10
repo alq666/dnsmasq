@@ -111,6 +111,9 @@ void cache_init(void)
   
   /* create initial hash table*/
   rehash(daemon->cachesize);
+
+  /* Initialize a RNG used later on */
+  srand(time(0));
 }
 
 /* In most cases, we create the hash table once here by calling this with (hash_table == NULL)
@@ -175,7 +178,7 @@ static void cache_hash(struct crec *crecp)
      immortal entries are at the end of the hash-chain.
      This allows reverse searches and garbage collection to be optimised */
 
-  struct crec **up = hash_bucket(cache_get_name(crecp));
+  struct crec **up = hash_bucket(cache_get_name(crecp)), **tmp = NULL;
 
   if (!(crecp->flags & F_REVERSE))
     {
@@ -186,8 +189,20 @@ static void cache_hash(struct crec *crecp)
 	while (*up && !((*up)->flags & F_IMMORTAL))
 	  up = &((*up)->hash_next);
     }
-  crecp->hash_next = *up;
-  *up = crecp;
+  /* randomize insertion, 50% before/after the last element
+     keep invariants untouched */
+  if (*up && rand() % 2)
+    {
+      /* insert crecp after up by opening the chain */
+      tmp = &((*up)->hash_next);
+      crecp->hash_next = *tmp;
+      (*up)->hash_next = crecp;
+    }
+  else
+    {
+      crecp->hash_next = *up;
+      *up = crecp;
+    }
 }
 
 #ifdef HAVE_DNSSEC
